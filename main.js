@@ -27,7 +27,6 @@ const firebaseConfig = {
 
 
   function uploadLeaderboardScore (initials, time){
-
     var ref = database.ref("highscores")
     var data = {
       name: initials,
@@ -36,45 +35,43 @@ const firebaseConfig = {
     ref.push(data)
   }
 
-
+  var sortedUsers = [];
   function gotData(data){
     
     console.log(data.val());
     var scores = data.val();
     var keys = Object.keys(scores);
-
     var leaderboard = document.getElementById("highScores");
-
-
 
     for ( var i=0; i < keys.length; i++){
       var k = keys[i];
       var initials = scores[k].name;
       var score = scores[k].score;
-      console.log(initials, score);
+      var rank = scores[k].rank;
+      sortedUsers.push({rank,initials, score});
 
       var content = document.createElement("h4")
       var li = document.createElement("li" )
       li.appendChild(content);
       content.textContent = (initials + ": " + score); 
       leaderboard.appendChild(li);
-
     }
+    addsortUsers(sortedUsers);
 
-    //Momentarily clears both UI lists so items can be added w/o duplicates
-    //document.getElementById("highScores").innerHTML = "";
-
-
-
-    
-
-    
   }
+
+
+
   function errData(err) {
     console.log("error!");
     console.log(err)
    }
 
+   function addsortUsers (users) {
+    
+    console.log(users)
+
+   }
 
 
 
@@ -154,15 +151,14 @@ function winCondition(){
       alert("Please enter your initials to be added to the leaderboard (EX:'AAA')")
       addToLeaderboard();
     }
-    else uploadLeaderboardScore(person, currentScore);
+    else {
+      //Momentarily clears both UI lists so items can be added w/o duplicates
+      document.getElementById("highScores").innerHTML = "";
+      uploadLeaderboardScore(person, currentScore);
+      document.location.reload(true);
+    }
 
-
-    //Shuffle/reset  function
-    cards.forEach(card => {
-      let randomPos = Math.floor(Math.random() * 12);
-      card.style.order = randomPos;
-      card.classList.remove('flip');
-    });
+   
     }
       , 1000);
 
