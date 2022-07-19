@@ -1,240 +1,233 @@
-
 ///////////////LEADERBOARD//////////////////////////
 const firebaseConfig = {
-  apiKey: "AIzaSyCzKjRcGq0tnn-4_uIXfwXHnEMHq3rFRrk",
-  authDomain: "zoo-pals.firebaseapp.com",
-  projectId: "zoo-pals",
-  storageBucket: "zoo-pals.appspot.com",
-  messagingSenderId: "560907537409",
-  appId: "1:560907537409:web:6c2d990e828276b5548400",
-  measurementId: "G-J1M9NYZWGS",
-  databaseURL: "https://zoo-pals-default-rtdb.firebaseio.com/"
+    apiKey: "AIzaSyCzKjRcGq0tnn-4_uIXfwXHnEMHq3rFRrk",
+    authDomain: "zoo-pals.firebaseapp.com",
+    projectId: "zoo-pals",
+    storageBucket: "zoo-pals.appspot.com",
+    messagingSenderId: "560907537409",
+    appId: "1:560907537409:web:6c2d990e828276b5548400",
+    measurementId: "G-J1M9NYZWGS",
+    databaseURL: "https://zoo-pals-default-rtdb.firebaseio.com/"
+  };
+  
+  
+  
+  
+  
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    var database = firebase.database();
+  
+    var ref = database.ref("highscores")
+    ref.on('value', gotData, errData )
+  
+  
+    leaderboardNames = [];
+  
+  
+    function uploadLeaderboardScore (initials, time){
+      var ref = database.ref("highscores")
+      var data = {
+        name: initials,
+        score: time
+      }
+     ref.push(data)
+    }
+
+
+  
+    function gotData(data){
+      
+      var scores = data.val();
+      var keys = Object.keys(scores);
+      var leaderboard = document.getElementById("highScores");
+  
+      for ( var i=0; i < 5; i++){
+        var k = keys[i];
+        var initials = scores[k].name;
+        var score = scores[k].score;
+  
+        var content = document.createElement("h4")
+        var li = document.createElement("li" )
+        li.appendChild(content);
+        content.textContent = (initials + ": " + score); 
+        li.setAttribute('class', 'scoreSection');
+        leaderboard.appendChild(li);
+      }
+  
+    }
+  
+  
+  
+    function errData(err) {
+      console.log("error!");
+      console.log(err)
+     }
+
+
+
+
+
+'use strict';
+
+const cards = {
+	box1: 'box2',
+	box2: 'box1',
+	box3: 'box4',
+	box4: 'box3',
+	box5: 'box6',
+	box6: 'box5',
+	box7: 'box8',
+	box8: 'box7',
+	box9: 'box10',
+	box10: 'box9',
+	box11: 'box12',
+	box12: 'box11',
+	box13: 'box14',
+	box14: 'box13',
+	box15: 'box16',
+	box16: 'box15',
+	box17: 'box18',
+	box18: 'box17'
 };
 
+//CARBON == MAIN PANEL !
+const carbon = document.querySelector('.carbon');
+const time = document.querySelector('.time');
+const counter = document.querySelector('.counter');
+const circle1 = document.querySelector('.panel__one');
+const circle2 = document.querySelector('.panel__two');
+const circle3 = document.querySelector('.panel__three');
+const container = document.querySelector('.container');
+const box = Array.from(document.querySelectorAll('.box'));
 
 
+let correct_flips = 0;
+let last_flipped = [];
+let moves = 0;
+let seconds = 0;
+let minutes = 0;
+let seconds_str = '';
+let minutes_str = '';
+let timer_observer;
 
+container.innerHTML = '';
 
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  var database = firebase.database();
-
-  var ref = database.ref("highscores")
-  ref.on('value', gotData, errData )
-
-
-  leaderboardNames = [];
-
-
-  function uploadLeaderboardScore (initials, time){
-    var ref = database.ref("highscores")
-    var data = {
-      name: initials,
-      score: time
-    }
-    ref.push(data)
-  }
-
-  var sortedUsers = [];
-  function gotData(data){
-    
-    console.log(data.val());
-    var scores = data.val();
-    var keys = Object.keys(scores);
-    var leaderboard = document.getElementById("highScores");
-
-    for ( var i=0; i < keys.length; i++){
-      var k = keys[i];
-      var initials = scores[k].name;
-      var score = scores[k].score;
-      var rank = scores[k].rank;
-      sortedUsers.push({rank,initials, score});
-
-      var content = document.createElement("h4")
-      var li = document.createElement("li" )
-      li.appendChild(content);
-      content.textContent = (initials + ": " + score); 
-      leaderboard.appendChild(li);
-    }
-    addsortUsers(sortedUsers);
-
-  }
-
-
-
-  function errData(err) {
-    console.log("error!");
-    console.log(err)
-   }
-
-   function addsortUsers (users) {
-    
-    console.log(users)
-
-   }
-
-
-
-
-
-   async function getLeaderboardScores (){
-
-  }
-
-////////////Leaderboard Stuff/////////////////
-var highScores = document.getElementById("highScores");
-
-var userScores = [];
-
-
-///////////////CARDS////////////////////////
-
-
-const cards = document.querySelectorAll('.memory-card');
-
-let hasFlippedCard = false;
-let lockBoard = false;
-let firstCard, secondCard;
-
-function flipCard() {
-  if (lockBoard) return;
-  if (this === firstCard) return;
-
-  this.classList.add('flip');
-
-  if (!hasFlippedCard) {
-    // first click
-    hasFlippedCard = true;
-    firstCard = this;
-
-    return;
-  }
-
-  // second click
-  secondCard = this;
-
-  checkForMatch();
+function flipOnClick(e) {
+	moves++;
+	counter.innerHTML = moves;
+	const element = e.target;
+	last_flipped.push(element);
+	element.classList.add('flipped');
+	// console.log(last_flipped.length);
+	compareFlipped(last_flipped);
 }
 
-function checkForMatch() {
-  let isMatch = firstCard.dataset.framework === secondCard.dataset.framework;
-
-  isMatch ? disableCards() : unflipCards();
+function compareFlipped(array) {
+	if (array.length > 2) {
+		array.forEach(el => el.classList.remove('flipped'));
+		last_flipped = [];
+	}
+	if (array.length == 2) {
+		const card1 = array[0].classList[1];
+		const card2 = array[1].classList[1];
+		// console.log(cards[card1], cards[card2]);
+		if (cards[card1] == card2 || cards[card2] == card1) {
+			// console.log('Yay its a match');
+			const c1 = document
+				.getElementsByClassName(card1)[0]
+				.firstElementChild.classList.add('matchingcards');
+			const c2 = document
+				.getElementsByClassName(card2)[0]
+				.firstElementChild.classList.add('matchingcards');
+			correct_flips += 1;
+			last_flipped = [];
+		} else {
+			setTimeout(() => {
+				array.forEach(el => el.classList.remove('flipped'));
+				last_flipped = [];
+			}, 700);
+		}
+	}
 }
 
-//Win condition variable///////////////////////////////////////////////////
-var matchedCards = 0;
-function disableCards() {
-  firstCard.removeEventListener('click', flipCard);
-  secondCard.removeEventListener('click', flipCard);
-  ++matchedCards;
-
-  console.log(matchedCards)
-  resetBoard();
-  if(matchedCards>5)
-  {
-    winCondition();
-  }
+function spreadCards(array) {
+	let new_Arr = array.filter(el => array.indexOf(el) % 2 == 0);
+	while (0 < new_Arr.length) {
+		const num = Math.floor(Math.random() * new_Arr.length);
+		const pick = new_Arr[num];
+		container.appendChild(pick);
+		// console.log(container);
+		new_Arr.splice(num, 1);
+	}
 }
 
+function startWatching(seconds, minutes) {
+	timer_observer = setInterval(() => {
+		seconds > 58 ? ((minutes += 1), (seconds = 0)) : (seconds += 1);
+		seconds_str = seconds > 9 ? `${seconds}` : `0${seconds}`;
+		minutes_str = minutes > 9 ? `${minutes}` : `0${minutes}`;
+		time.innerHTML = `${minutes_str}:${seconds_str}`;
+		if (correct_flips >= 9) {
+			clearInterval(timer_observer);
+			gameWonParty(moves);
+			return;
+		}
+		// console.log(minutes, seconds_str);
+	}, 1000);
+}
 
+function startGame() {
+	correct_flips = 0;
+	last_flipped = [];
+	moves = 0;
+	seconds = 0;
+	minutes = 0;
+	seconds_str = '';
+	minutes_str = '';
+	time.innerHTML = 'XX:XX';
+	counter.innerHTML = '0';
+	container.innerHTML = '';
+	box.forEach(el => el.classList.remove('flipped'));
+	clearInterval(timer_observer);
+	spreadCards(box);
+	container.childNodes.forEach(node =>
+		node.firstElementChild.classList.remove('matchingcards')
+	);
+	startWatching(seconds, minutes);
+}
 
-////////////////////WIN CONDITION////////////////////////////////////////////////////////////
-function winCondition(){
-
-  var currentScore = (timers[0].counter)
-  setTimeout(function addToLeaderboard(){
-
-    let userName;
-    let person = prompt("Congrats! You've won! Please enter your initials for the leaderboard!", "AAA");
+function gameWonParty(moves) {
+	let person = prompt("Congrats! You've won! Please enter your initials for the leaderboard!", "AAA");
     if (person == null || person == "" || person.length>3) {
       alert("Please enter your initials to be added to the leaderboard (EX:'AAA')")
-      addToLeaderboard();
+      gameWonPArty(moves);
     }
     else {
       //Momentarily clears both UI lists so items can be added w/o duplicates
       document.getElementById("highScores").innerHTML = "";
-      uploadLeaderboardScore(person, currentScore);
+      uploadLeaderboardScore(person, moves);
       document.location.reload(true);
     }
-
-   
-    }
-      , 1000);
-
 }
 
-function unflipCards() {
-  lockBoard = true;
+box.forEach(el => el.addEventListener('click', flipOnClick));
 
-  setTimeout(() => {
-    firstCard.classList.remove('flip');
-    secondCard.classList.remove('flip');
+circle1.addEventListener('click', (e) => {
+	clearInterval(timer_observer);
+	container.innerHTML = '';
+	time.innerHTML = 'XX:XX';
+	counter.innerHTML = '0';
+});
 
+circle2.addEventListener('click', (e) => {
+	carbon.style.height = '85%';
+	carbon.style.width = '65%';
+});
+//green circle
+circle3.addEventListener('click', (e) => {
+	carbon.style.height = '90%';
+	carbon.style.width = '90%';
+});
 
-    resetBoard();
-  }, 1500);
-}
-
-function resetBoard() {
-  [hasFlippedCard, lockBoard] = [false, false];
-  [firstCard, secondCard] = [null, null];
-}
-
-(function shuffle() {
-  cards.forEach(card => {
-    let randomPos = Math.floor(Math.random() * 12);
-    card.style.order = randomPos;
-  });
-})();
-
-cards.forEach(card => card.addEventListener('click', flipCard));
-
-
-
-////////////Timer Stuff/////////////////
-
-
-var canvas=document.getElementById("canvas");
-var ctx=canvas.getContext("2d");
-
-var cw=canvas.width;
-var ch=canvas.height;
-
-
-var timers=[];
-timers.push({delay:25,nextFireTime:0,doFunction:doTimers,counter:5000});
-
-
-requestAnimationFrame(timerLoop);
-
-function timerLoop(currentTime){
-  requestAnimationFrame(timerLoop);
-
-  for(var i=0;i<timers.length;i++){
-    if(currentTime>timers[i].nextFireTime){
-      var t=timers[i];
-      t.nextFireTime=currentTime+t.delay;
-      t.doFunction(t,i);
-    }
-  }
-}
-function doTimers(t,i){ 
-  if (t.counter == 0)
-  {
-    t.counter = 5000;
-    resetBoard();
-    alert("You lose");
-    
-  }
-
-  ctx.font = '50px serif';
-  ctx.clearRect(0,100+i*50-50,cw,60);
-  ctx.fillText((--t.counter),20,100+20*i); 
-    
-}
-
-
-
-
-
+ 
