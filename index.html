@@ -13,6 +13,7 @@
     <!--Initialize Firebase-->
     <script src="https://www.gstatic.com/firebasejs/7.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.10.0/firebase-database.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/7.10.0/firebase-analytics.js"></script>
   
 </head>
 
@@ -172,18 +173,21 @@
 
 	</div>
 
+<div class = leaderboard-wrapper>
+	<div class="leaderboard">
+		<h1>
+		  <svg class="ico-cup">
+			<use xlink:href="#cup"></use>
+		  </svg>
+		  High Scores
+		</h1>
+		<ul id="highScores" style="list-style-type: none; padding: 0; color: #fff;">
+	
+		</ul>
+	  </div>
 
-  <div class="leaderboard">
-    <h1>
-      <svg class="ico-cup">
-        <use xlink:href="#cup"></use>
-      </svg>
-      High Scores
-    </h1>
-    <ul id="highScores" style="list-style-type: none; padding: 0; color: #fff;">
+</div>
 
-    </ul>
-  </div>
   <svg style="display: none;">
     <symbol id="cup" x="0px" y="0px"
      width="25px" height="26px" viewBox="0 0 25 26" enable-background="new 0 0 25 26" xml:space="preserve">

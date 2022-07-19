@@ -17,6 +17,7 @@ const firebaseConfig = {
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     var database = firebase.database();
+	var analytics = firebase.analytics();
   
     var ref = database.ref("highscores")
     ref.on('value', gotData, errData )

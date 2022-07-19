@@ -1,13 +1,19 @@
 /*--------------------
 Leaderboard
 --------------------*/
+.leaderboard-wrapper{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 295px;
+  margin: auto;
+  padding-top: 50px;
+}
 .leaderboard {
-    position: absolute;
-    top: 75%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    display:flex;
+    flex-direction: column;
     width: 285px;
-    height: 308px;
+    height: 369px;
     background: linear-gradient(to bottom, #3a404d, #181c26);
     border-radius: 10px;
     box-shadow: 0 7px 30px rgba(62, 9, 11, 0.3);
@@ -181,4 +187,12 @@ Leaderboard
   }
   .the-most img {
     max-width: 100%;
+  }
+
+
+  @media screen and (max-width: 780px){
+
+    .leaderboard{
+      top: 65%;
+    }
   }
